@@ -1,0 +1,42 @@
+#Webimage-start-image{
+    position: fixed;
+
+    text-align: center;
+    opacity: 0.5;
+    display:  block;
+    height: 100%;
+    width: 100%;
+    border: 1px solid chocolate;
+    margin: 0 auto;
+    bottom: 0px;
+      
+}
+#Webimage-start-image-label{
+    position: fixed;
+    text-align: center;
+    font-size: x-small;
+    margin: 0 auto;
+    width:30%;
+    bottom:10%;
+    left:35%;
+}
+@media screen and (max-width: 600px) {
+    #Webimage-start-image{
+        position: fixed;
+        opacity: 0.4;
+        top:2%;
+        display: block;
+        height: 50%;
+        width: auto;
+        border: 1px solid chocolate;
+        margin: 0 auto;
+        z-index: -10;
+          
+    }
+    #Webimage-start-image-label{
+        top:1%;
+
+    }
+ 
+    
+}
