@@ -20,48 +20,68 @@ class App extends React.Component {
   startTest = async () => {
     const data = await fetch("/data");
     const questions = await data.json();
-    this.setState({ questions: questions });
+    this.setState({ questions: questions }, () => {
+      console.log(this.state.questions.length);
+    });
     this.setState({ started: true });
   };
   // called when the user clicks on the next button
   toNextQuestion = async (index) => {
+    console.log("index");
+    console.log(index);
+
     //remove the next button
     this.setState({ readyForNext: false });
-    this.setState({ answeredQuestion: index + 1 });
+
     const answer = this.checkedAnswer();
+    console.log(answer);
     if (answer.value === "correct") {
+      console.log("correct");
       //https://stackoverflow.com/questions/42364838/incrementing-state-value-by-one-using-react
-      this.setState({score: this.state.score + 1}, () => {
-    });
-    } 
-    
-    if (this.state.answeredQuestion === this.state.questions.length - 1) {
-      this.setState({ finished: true });
-      const index = 100/this.state.questions.length;
-      const grade = this.state.score * index;
-      this.setState({ grade: grade}); 
-      const messageData = await fetch("/results/:" + grade);
-      const messageJson = await messageData.json();
-      this.setState({ message: messageJson });
+      this.setState({ score: this.state.score + 1 }, () => {
+        console.log(this.state.score);
+        this.setState(
+          { grade: (this.state.score * 100) / this.state.questions.length },
+          () => {
+            console.log(this.state.grade);
+          }
+        );
+      });
     }
+
+    this.setState(
+      {
+        answeredQuestion:
+          this.state.answeredQuestion < this.state.questions.length
+            ? index + 1
+            : index,
+      },
+      () => {
+        console.log(this.state.answeredQuestion);
+      }
+    );
+    this.setState(
+      {
+        finished:
+          this.state.answeredQuestion === this.state.questions.length - 1
+            ? true
+            : false,
+      },
+      () => {
+        console.log("finished: " + this.state.finished);
+        if (this.state.finished === true) {
+          this.getMessage();
+        }
+      }
+    );
   };
 
   //once all the questions are answered the result message is selected according to the score
   getMessage = async () => {
-   // var index = Math.floor(this.state.grade / this.state.messages.length);
     const messageData = await fetch("/results/:" + this.state.grade);
     const messageJson = await messageData.json();
     this.setState({ message: messageJson });
-  };
-  //returns number of checked answers in question on display
-  checkedNumber = () => {
-    const checked = [];
-    var checkboxes = document.getElementsByClassName("answer-checkbox");
-    for (let index = 0; index < checkboxes.length; index++) {
-      const checkbox = checkboxes[index];
-      if (checkbox.checked) checked.push(checkbox);
-    }
-    return checked.length;
+    console.log(this.state.messageJson);
   };
   checkedAnswer = () => {
     var radios = document.getElementsByClassName("answer-checkbox");
@@ -74,7 +94,12 @@ class App extends React.Component {
 
   // called each time an answer is selected
   onAnswerCheck = () => {
-    this.setState({ readyForNext: this.checkedNumber() === 1 ? true : false });
+    this.setState({
+      readyForNext:
+        this.state.answeredQuestion < this.state.questions.length
+          ? true
+          : false,
+    });
   };
 
   render() {
